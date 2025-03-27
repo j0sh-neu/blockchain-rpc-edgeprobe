@@ -11,17 +11,6 @@ from typing import List, Dict, Optional, Any
 import uvicorn
 import threading
 import psutil
-import signal
-import sys
-
-def handle_sigterm(*args):
-    """Handle SIGTERM gracefully to allow proper cleanup."""
-    print("Received SIGTERM, shutting down...")
-    # You could add additional cleanup here if needed
-    sys.exit(0)
-
-# Register the signal handler
-signal.signal(signal.SIGTERM, handle_sigterm)
 
 # --- Models ---
 class SimpleLatency(BaseModel):
@@ -127,7 +116,7 @@ class ConfigManager:
                 }
             ],
             'global_settings': {
-                'database_path': os.environ.get('DATABASE_PATH', 'latency_tracker.db'),
+                'database_path': 'latency_tracker.db',
                 'api_host': '0.0.0.0',
                 'api_port': 8000,
                 'simple_data_retention_days': 7,
@@ -904,9 +893,8 @@ if __name__ == "__main__":
     maintenance_thread.start()
     
     # Run the API server
-    app_port = int(os.environ.get('PORT', config['global_settings']['api_port']))
     uvicorn.run(
         app,
-        host="0.0.0.0",  # Always bind to all interfaces in container environments
-        port=app_port
+        host=config['global_settings']['api_host'],
+        port=config['global_settings']['api_port']
     )
