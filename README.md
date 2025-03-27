@@ -1,4 +1,4 @@
-# RPC Latency Tracker
+# Blockchain RPC EdgeProbe
 
 A lightweight application for monitoring JSON-RPC endpoint latency with comprehensive metrics collection and analysis.
 
@@ -53,8 +53,8 @@ Perfect for blockchain infrastructure monitoring, web3 development, and ensuring
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/rpc-latency-tracker.git
-   cd rpc-latency-tracker
+   git clone https://github.com/j0sh-neu/blockchain-rpc-edgeprobe.git
+   cd blockchain-rpc-edgeprobe
    ```
 
 2. Install dependencies:
@@ -64,7 +64,7 @@ Perfect for blockchain infrastructure monitoring, web3 development, and ensuring
 
 3. Run the application:
    ```bash
-   python latency_tracker.py
+   python edgeprobe.py
    ```
 
 ## Configuration
