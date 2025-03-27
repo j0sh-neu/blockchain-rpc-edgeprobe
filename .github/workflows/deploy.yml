@@ -1,0 +1,43 @@
+name: Deploy
+
+# Only deploy from the main branch
+on:
+  workflow_run:
+    workflows: ["Docker Build"]
+    branches: [main]
+    types: [completed]
+
+jobs:
+  deploy:
+    # Only run if the Docker build was successful
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Check out repository for deployment scripts
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      # Install SSH key for deployment
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      
+      # Deploy to server using SSH
+      - name: Deploy to server
+        env:
+          # Pass these environment variables to the deployment script
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PATH: /opt/blockchain-rpc-edgeprobe
+          IMAGE_NAME: ghcr.io/${{ github.repository }}:main
+        run: |
+          echo "Deploying to $DEPLOY_HOST..."
+          # Pull latest image and restart the service
+          ssh $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && \
+            docker pull $IMAGE_NAME && \
+            docker-compose down && \
+            docker-compose up -d && \
+            echo 'Deployment completed successfully'"
